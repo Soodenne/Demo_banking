@@ -34,5 +34,6 @@ export interface AccountInterop {
 }
 export const ErrorAccountExists = new HttpException('Account already exists', HttpStatus.BAD_REQUEST);
 export const ErrorNegativeBalance = new HttpException('Balance cannot be negative', HttpStatus.BAD_REQUEST);
-
+export const ErrorInsufficientBalance = new HttpException('Insufficient balance', HttpStatus.BAD_REQUEST);
+export const ErrorDuplicateAccounts = new HttpException('Duplicate accounts', HttpStatus.BAD_REQUEST);
 export const ErrorNaN = new HttpException('Balance is not a number', HttpStatus.BAD_REQUEST);

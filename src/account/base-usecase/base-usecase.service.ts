@@ -3,7 +3,7 @@ import {
   Account,
   AccountRepository,
   AccountUseCase,
-  ErrorAccountExists, ErrorNaN,
+  ErrorAccountExists, ErrorDuplicateAccounts, ErrorInsufficientBalance, ErrorNaN,
   ErrorNegativeBalance
 } from "../../domain/account.domain";
 
@@ -43,7 +43,10 @@ export class BaseUseCaseService implements AccountUseCase{
     let fromAccount = this.repo.get(from);
     let toAccount = this.repo.get(to);
     if(fromAccount.balance < amount){
-      throw ErrorNegativeBalance;
+      throw ErrorInsufficientBalance;
+    }
+    if(fromAccount.id === toAccount.id){
+      throw ErrorDuplicateAccounts;
     }
     fromAccount.balance -= amount;
     toAccount.balance += amount;
