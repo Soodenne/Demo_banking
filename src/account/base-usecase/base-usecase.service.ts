@@ -6,6 +6,8 @@ import {
   ErrorAccountExists, ErrorDuplicateAccounts, ErrorInsufficientBalance, ErrorNaN,
   ErrorNegativeBalance
 } from "../../domain/account.domain";
+import * as process from "process";
+import { from } from "rxjs";
 
 @Injectable()
 export class BaseUseCaseService implements AccountUseCase{
@@ -15,14 +17,14 @@ export class BaseUseCaseService implements AccountUseCase{
   getAll(): Account[] {
     return this.repo.getAll();
   }
-  get(id: number): Account {
+  async get(id: string): Promise<Account> {
     return this.repo.get(id);
   }
   update(account: Account): Account {
     return this.repo.update(account);
   }
-  create(account: Account): Account {
-    let existed = this.repo.get(account.id);
+  async create(account: Account): Promise<Account> {
+    let existed = await this.repo.get(account.id);
     const isNotNumber = isNaN(account.balance);
     const isNegative = account.balance < 0;
     if (isNotNumber) {
@@ -36,21 +38,21 @@ export class BaseUseCaseService implements AccountUseCase{
     }
     return this.repo.create(account);
   }
-  delete(id: number): Account {
+  delete(id: string): Account {
     return this.repo.delete(id);
   }
-  transferMoney(from: number, to: number, amount: number) {
+  async transferMoney(from: string, to: string, amount: number) {
     let fromAccount = this.repo.get(from);
     let toAccount = this.repo.get(to);
-    if(fromAccount.balance < amount){
+    if((await fromAccount).balance < amount){
       throw ErrorInsufficientBalance;
     }
-    if(fromAccount.id === toAccount.id){
+    if((await fromAccount).id === (await toAccount).id){
       throw ErrorDuplicateAccounts;
     }
-    fromAccount.balance -= amount;
-    toAccount.balance += amount;
-    this.update(fromAccount);
-    this.update(toAccount);
+    (await fromAccount).balance -= amount;
+    (await toAccount).balance += amount;
+    this.update(await fromAccount);
+    this.update(await toAccount);
   }
 }

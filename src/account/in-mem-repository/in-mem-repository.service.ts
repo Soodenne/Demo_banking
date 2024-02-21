@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Account, AccountRepository } from "../../domain/account.domain";
 import { DirectoryInt } from "../../utils/directory.utils";
+import { from } from "rxjs";
 
 @Injectable()
 export class InMemRepositoryService implements AccountRepository{
@@ -13,7 +14,7 @@ export class InMemRepositoryService implements AccountRepository{
     return Object.values(this.accounts); // Convert to array
   }
   //get account by id
-  get(id: number): Account {
+  async get(id: string): Promise<Account> {
     return this.accounts[id]
   }
 
@@ -24,10 +25,10 @@ export class InMemRepositoryService implements AccountRepository{
     return this.accounts[account.id] = account;
   }
 
-  delete(id: number) {
+  delete(id: string) {
     delete this.accounts[id];
   }
-  transferMoney(from: number, to: number, amount: number) {
+  transferMoney(from: string, to: string, amount: number) {
     this.transferMoney(from, to, amount);
   }
 }

@@ -1,36 +1,36 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 
 export interface Account {
-  id: number;
+  id: string;
   UserName: string;
   balance: number;
 }
 
 export interface AccountRepository {
   getAll(): Account[];
-  get(id: number): Account;
-  create(account: Account): Account;
-  update(account: Account): Account;
-  delete(id: number);
-  transferMoney(from: number, to: number, amount: number);
+  get(id: string): Promise<Account>;
+  create(account: Account): any;
+  update(account: Account): any;
+  delete(id: string);
+  transferMoney(from: string, to: string, amount: number): any;
 }
 
 export interface AccountUseCase {
   getAll(): Account[];
-  get(id: number): Account;
-  create(account: Account): Account;
-  update(account: Account): Account;
-  delete(id: number);
-  transferMoney(from: number, to: number, amount: number);
+  get(id: string): Promise<Account>;
+  create(account: Account): any;
+  update(account: Account): any;
+  delete(id: string);
+  transferMoney(from: string, to: string, amount: number): any;
 }
 
 export interface AccountInterop {
   getAll(token: string): Account[];
-  get(token: string, id: number): Account;
-  create(token: string, account: Account): Account;
-  update(token: string, account: Account): Account;
-  delete(token: string, id: number);
-  transferMoney(from: number, to: number, amount: number);
+  get(token: string, id: string): Promise<Account>;
+  create(token: string, account: Account): any;
+  update(token: string, account: Account): any;
+  delete(token: string, id: string);
+  transferMoney(from: string, to: string, amount: number): any;
 }
 export const ErrorAccountExists = new HttpException('Account already exists', HttpStatus.BAD_REQUEST);
 export const ErrorNegativeBalance = new HttpException('Balance cannot be negative', HttpStatus.BAD_REQUEST);

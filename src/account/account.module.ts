@@ -4,6 +4,7 @@ import { BaseUseCaseService } from './base-usecase/base-usecase.service';
 import { FirestoreRepositoryService } from './firestore-repository/firestore-repository.service';
 import { InMemRepositoryService } from './in-mem-repository/in-mem-repository.service';
 import { AccountController } from './account.controller';
+import { AuthModule } from "../auth/auth.module";
 
 
 @Module({
@@ -20,10 +21,16 @@ import { AccountController } from './account.controller';
       provide: 'AccountInterop',
       useClass: BaseInteropService
     },
+    {
+      provide: 'FirestoreRepository',
+      useClass: FirestoreRepositoryService
+    },
+
 
   ],
   controllers: [AccountController],
-  exports: ['AccountInterop', 'AccountUseCase', 'AccountRepository'],
+  exports: ['AccountInterop', 'AccountUseCase', 'AccountRepository','FirestoreRepository'],
+  imports: [AuthModule],
 })
 export class AccountModule {
 

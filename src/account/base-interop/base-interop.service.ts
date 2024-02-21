@@ -1,32 +1,51 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Account, AccountInterop, AccountUseCase } from "../../domain/account.domain";
 import { BaseUseCaseService } from "../base-usecase/base-usecase.service";
+import { AuthUseCase, ErrMessUnauthorized } from "../../domain/auth.domain";
 
 @Injectable()
 export class BaseInteropService implements AccountInterop{
-  constructor(@Inject('AccountUseCase')private accountUseCase: AccountUseCase) {
+  constructor(@Inject('AccountUseCase')private accountUseCase: AccountUseCase, @Inject('AuthBaseUsecaseService') private authUseCase: AuthUseCase,
+  ) {
   }
 
   getAll(token: string): Account[] {
     return this.accountUseCase.getAll();
   }
 
-  create(token: string, account: Account): Account {
-    return this.accountUseCase.create(account);
+  async create(token: string, account: Account) {
+    try {
+      let decodedToken = await this.authUseCase.verifyToken(token);
+
+      account.id = decodedToken.uid;
+
+      console.log(decodedToken)
+      return this.accountUseCase.create(account);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  delete(token: string, id: number) {
+  async delete(token: string, id: string) {
+    await this.authUseCase.verifyToken(token);
     return this.accountUseCase.delete(id);
   }
 
-  get(token: string, id: number): Account {
-    return this.accountUseCase.get(id);
+  async get(token: string, id: string): Promise<Account> {
+    try {
+      let decodedToken = await this.authUseCase.verifyToken(token);
+      let account = await this.accountUseCase.get(decodedToken.uid);
+      return account;
+    } catch (error) {
+      throw ErrMessUnauthorized;
+    }
   }
 
-  update(token: string, account: Account): Account {
+  async update(token: string, account: Account): Promise<Account> {
+    await this.authUseCase.verifyToken(token);
     return this.accountUseCase.update(account);
   }
-  transferMoney(from: number, to: number, amount: number) {
+  transferMoney(from: string, to: string, amount: number) {
     this.accountUseCase.transferMoney(from, to, amount);
   }
 }
